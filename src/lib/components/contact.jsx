@@ -1,9 +1,49 @@
+import { React } from "react";
 import { FaInstagram } from "react-icons/fa6";
 import { RiTwitterXFill } from "react-icons/ri";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import { MdLocalPhone, MdLocationPin, MdMailOutline} from "react-icons/md";
-
+import { toast } from 'react-toastify';
+import { db } from "../../firebase/config";
+import { collection,  setDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import Loader from "../ui/loader";
 export default function Contact() {
+    const [firstName, setFirstName] = useState("")
+    const [otherName, setOtherName] = useState("")
+    const [email, setEmail] = useState("")
+    const [message, setMessage] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    const handleMessage = async (e) => {
+        e.preventDefault();
+        if(!firstName || !otherName || !email || !message){
+            toast.info("Fields are required")
+            return;
+        }
+        setLoading(true)
+        const messageId = Date.now().toString();
+        try{
+            await setDoc(doc(db, "meet-wear-buyer-users-db", "contact", "message-db",  messageId),{
+                firstName: firstName,
+                otherName: otherName,
+                email: email,
+                message: message,
+                type: "contact-message",
+                sendAt: serverTimestamp()
+            })
+            toast.success("Message sent successfully!");
+            setFirstName("")
+            setOtherName("")
+            setEmail("")
+            setMessage("")
+        }catch (error){
+            toast.error("Could not sent message, try again later");
+            console.log("Error sending message: ", error.message);
+        }finally{
+            setLoading(false)
+        }
+    }
     return (<>
         <section className="w-full bg-[#f5f5f5] my-10">
             <div className="w-[95%] mx-auto h-full py-10 flex flex-col lg:flex-row items-center justify-center lg:items-start gap-4">
@@ -44,31 +84,33 @@ export default function Contact() {
                         <h3 className="font-[Montserrat] font-semibold text-xl text-[#212121]">Drop a message for us</h3>
                     </div>
 
-                    <form className="w-full flex flex-col">
+                    <form className="w-full flex flex-col" onSubmit={handleMessage}>
                         {/* name */}
                         <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4 w-full">
                             {/* f-name */}
                             <div>
                                 <label htmlFor="firstName" className="font-[Cabin] font-normal text-base">First Name</label>
-                                <input type="text" id="firstName" placeholder="Your First Name" className="w-full h-10 font-[Cabin] text-base px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                                <input disabled={loading} type="text" id="firstName" placeholder="Your First Name" className={`w-full h-10 font-[Cabin] text-base px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${loading ? "text-gray-400" : "text-[#212121]"}`} value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
                             </div>
                             {/* s-name */}
                             <div>
                                 <label htmlFor="otherName" className="font-[Cabin] font-normal text-base">Other Name</label>
-                                <input type="text" id="otherName" placeholder="Your Other Name" className="w-full h-10 font-[Cabin] text-base px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                                <input disabled={loading} type="text" id="otherName" value={otherName} onChange={(e) => setOtherName(e.target.value)} placeholder="Your Other Name" className={`w-full h-10 font-[Cabin] text-base px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${loading ? "text-gray-400" : "text-[#212121]"}`}/>
                             </div>
                         </div>
                         <div className="w-full h-auto mb-4">
                             <label htmlFor="email" className="font-[Cabin] font-normal text-base">Email</label>
-                            <input type="email" id="email" placeholder="Your Email" className="w-full h-10 font-[Cabin] text-base px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                            <input disabled={loading} type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your Email" className={`w-full h-10 font-[Cabin] text-base px-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${loading ? "text-gray-400" : "text-[#212121]"}`}/>
                         </div>
                         <div className="w-full h-auto">
                             <label htmlFor="message" className="font-[Cabin] font-normal text-base">Message</label>
                             <div className="w-full h-[100px]">
-                                <textarea type="text" id="message" placeholder="Type Your Message" className="w-full h-full p-2 border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 outline-none font-[Cabin] text-base resize-none"></textarea>
+                                <textarea disabled={loading} type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type Your Message" className={`w-full h-full p-2 border border-gray-300 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 outline-none font-[Cabin] text-base resize-none ${loading ? "text-gray-400" : "text-[#212121]"}`}></textarea>
                             </div>
                         </div>
-                        <button className="mt-4 bg-blue-500 px-6 py-2 rounded-md text-base text-white font-[Cabin] font-semibold cursor-pointer">Send Message</button>
+                        <button type="submit" disabled={loading} className={`mt-4 w-full h-10 rounded-md text-base text-white font-[Cabin] font-semibold transition-colors duration-300 ${loading ? "bg-blue-300 cursor-not-allowed hover:bg-blue-300" : "bg-blue-500 hover:bg-blue-700 cursor-pointer"}`}>{loading ? (<div className="w-full h-full flex items-center justify-center">
+                            <Loader/>
+                        </div>) : "Send Message"}</button>
                     </form>
                 </div>
             </div>
