@@ -166,7 +166,7 @@ const toggleFavorite = async (product) => {
 
           <div className="w-full flex items-start lg:flex-row flex-col gap-10">
             {/* PRODUCT IMAGE */}
-            <div className="w-[50%] h-[350px] md:h-[450px] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+            <div className="lg:w-[50%] h-[350px] md:h-[450px] w-full rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
               <img
                 src={product.productImage}
                 alt={product.productName}
@@ -220,10 +220,10 @@ const toggleFavorite = async (product) => {
 
               <div className="w-full flex items-center gap-5">
               {/* ADD TO CART BUTTON */}
-                  <button onClick={() => addToCart(product)} className="w-[200px] py-3 bg-[#0000ff] text-white rounded-lg text-base font-[Cabin] shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-5 cursor-pointer"><BiCartAdd size={22}/> Add to Cart</button>
+                  <button onClick={() => addToCart(product)} className="lg:w-[200px] w-fit px-4 lg:px-0 py-3 bg-[#0000ff] text-white rounded-lg text-base font-[Cabin] shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-5 cursor-pointer"><BiCartAdd size={22}/> Add to Cart</button>
 
                   {/* ADD TO WISHLIST BUTTON */}
-                  <button onClick={() => toggleFavorite(product)} className={`w-[200px] py-3 bg-[#dd0808] text-white rounded-lg text-base shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-5 cursor-pointer
+                  <button onClick={() => toggleFavorite(product)} className={`lg:w-[200px] w-fit px-4 lg:px-0  py-3 bg-[#dd0808] text-white rounded-lg text-base shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-5 cursor-pointer
                   ${wishlistIds.includes(product.id) ? "bg-gray-600" : "bg-[#dd0808]"}`}>
                   {wishlistIds.includes(product.id) ? (<IoMdHeart size={22}/>) : (<CiHeart size={22}/>)}
                   {wishlistIds.includes(product.id) ? "Remove Favourite" : "Add to Favourite"}
